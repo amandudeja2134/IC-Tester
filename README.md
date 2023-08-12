@@ -1,9 +1,7 @@
 # Microprocessor-Project
 BITS Pilani KK Birla Goa Campus, Microprocessors and Interfacing Course (CS-F241) Project.
 
-Project on IC tester.
-
-IC's to test:
+Project on IC tester to test:
 
 7400 - NAND
 
