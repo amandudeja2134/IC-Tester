@@ -1,4 +1,4 @@
-;To initialise the model tiny of initial part
+;initialisation
 #make_bin#
 
 #LOAD_SEGMENT=FFFFh#
@@ -22,12 +22,12 @@
 #BP=0000h#
 
 
-;To jump the initialisation part of the code.
+;jump to initialisation.
 jmp st1
 
 
-;To initialise the ports of the 8255s
-Port1A equ 00h    ;CHANGE IF THERE IS AN ERROR!!!!!!!!
+;8255 mapping
+Port1A equ 00h  
 Port1B equ 02h
 Port1C equ 04h
 Creg1 equ  06h
@@ -37,24 +37,24 @@ Port2B equ 12h
 Port2C equ 14h
 Creg2 equ  16h
 
-;Hex codes for keypad
+;Keypad
 TableK    db    0eeh, 0edh, 0ebh, 0e7h,        ;0, 1, 2, 3
 db    0deh, 0ddh, 0dbh, 0d7h,        ;4, 5, 6, 7,
 db    0beh, 0bdh, 0bbh, 0b7h,        ;8, 9, Backspace, Enter,
 db    07eh                        ;Test
 
-;Hex codes for display
+;Display
 TableD     db     0c0h, 0f9h, 0a4h, 0b0h        ;0, 1, 2, 3,
 db    099h, 092h, 082h, 0f8h        ;4, 5, 6, 7,
 db    080h, 090h, 08ch, 088h        ;8, 9, P, A,
 db    092h, 08eh, 0f9h, 0c7h        ;S, F, I, L
 
 
-;Initialise the stack
+;Stack initialisation
 ;Stack1 dw 30 dup(0)
 ;Tstack1 dw 0
 
-;Create the database with IC numbers
+;IC number database
 NandIC     db '7400'
 AndIC    db '7408'
 OrIC     db '7432'
@@ -69,7 +69,7 @@ FAILW    db 08EH,088H,0F9H,0C7H,00h
 PASSW    db 08CH,088H,092H,092H
 
 
-;CODE STARTS FROM HERE
+;CODE STARTS HERE
 st1:    CLI
 
 ;Initialise the segments.
@@ -79,16 +79,16 @@ st1:    CLI
 	MOV SS,AX
 	MOV SP,0FFFEH
 
-;Initialise the Stack Pointer.
+;Stack Pointer Initialisation.
 ;lEA SP,Tstack1
 
-;Initialise the 8255s
+;8255 1
 ;8255_1
 MOV AL,10001000b
 OUT Creg1,AL
 MOV AL,11111111B
 OUT Port1A,AL
-;8255_2
+;8255 2
 ;MOV AL,10001010b
 ;OUT Creg2,AL
 
@@ -118,10 +118,10 @@ INC bp
 mov    bH,cs:IpIC2[bp]
 DEC CH
 JNZ Z21
-zx:        ;Jump to DISPLAY during every poll
-IN AL, Port1C    ;
-AND AL,0F0H        ;CHECK FOR KEY RELEASE
-j1:        CMP AL,0f0H        ;
+zx:                     ;POLLING TO DISPLAY
+IN AL, Port1C    
+AND AL,0F0H             ;CHECK FOR KEY RELEASE
+j1:        CMP AL,0f0H        
 JNZ X1
 
 X2:        Z12:    MOV CH,cs:CntDgts
