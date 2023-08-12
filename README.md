@@ -1,5 +1,5 @@
 # Microprocessor-Project
-BITS Pilani KK Birla Goa Campus, Microprocessors and Interfacing Course (CS-F241) Project.
+Microprocessors and Interfacing Course Project.
 
 Project on IC tester to test:
 
