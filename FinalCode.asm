@@ -82,15 +82,11 @@ st1:    CLI
 ;Stack Pointer Initialisation.
 ;lEA SP,Tstack1
 
-;8255 1
-;8255_1
+
 MOV AL,10001000b
 OUT Creg1,AL
 MOV AL,11111111B
 OUT Port1A,AL
-;8255 2
-;MOV AL,10001010b
-;OUT Creg2,AL
 
 X0:        MOV AL,00H
 OUT Port1C,AL
@@ -154,18 +150,6 @@ AND AL,0F0H
 j2:        CMP AL,0F0H
 JZ X2
 
-;call DISDIG
-;CALL D20MS
-;MOV AL,00H
-;OUT Port1C,AL
-;IN AL,Port1C
-;AND AL,0F0H
-;CMP AL,0F0H
-;JZ X2
-;inc cs:CntDgts
-;mov ch,6
-;inc CntDgts
-;CALL DISDIG
 MOV AL,0EH
 MOV BL,AL
 OUT Port1C,AL
@@ -211,7 +195,6 @@ CMP DI,9
 JA BCKSPC
 CMP cs:CntDgts,6                ;Checking if the number of digits are less than 6 to take input
 JE X0
-;LEA SI,IpIC
 mov Dl,cs:CntDgts
 mov dh,0
 mov si,dx
@@ -337,7 +320,6 @@ JMP FAIL
 			;Checking in 4 digit IC database
 NEXT4:
         MOV CX,4
-        ;LEA SI,IpIC
 		mov bp,0
 d1:     mov al,CS:IpIC[bp]
         ;LEA DI,NandIC
@@ -354,7 +336,6 @@ d1:     mov al,CS:IpIC[bp]
 d2:     mov bp,0
         mov cx,4
 d3:     mov al,cs:IpIC[bp]
-        ;LEA DI,AndIC
         mov ah,CS:AndIC[bp]
         inc bp
         cmp ah,al            ;Checking for AND
@@ -367,7 +348,6 @@ d3:     mov al,cs:IpIC[bp]
 d4:     mov bp,0
         mov cx,4
 d5:     mov al,cs:IpIC[bp]
-        ;LEA DI,ORIC  
         mov ah,cs:OrIC[bp]
         inc bp
         cmp ah,al            ;Checking for OR
@@ -380,7 +360,6 @@ d5:     mov al,cs:IpIC[bp]
 d6:     mov bp,0
         mov cx,4
 d7:     mov al,CS:IpIC[bp]
-        ;LEA DI,XORdIC
         mov ah,CS:XorIC[bp]
         inc bp
         cmp ah,al            ;Checking for Xor
@@ -589,7 +568,6 @@ JMP PASS
 
 ;Testing for XOR-IC
 TESTXOR:
-;CREG
 MOV AL,10001010b
 OUT Creg2,AL
 
@@ -651,8 +629,6 @@ TESTXNOR:
 ;Changing CREG to suite this particular IC
 MOV AL,10000011b
 OUT Creg2,AL
-;CHANGE IF IT IS WRONG !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-;ACTUAL TESTING
 MOV AL,00
 OUT Port2A,AL
 OUT Port2C,AL
@@ -728,7 +704,6 @@ out    Port1A,al
 mov    AL,BL
 out    Port1B,al
 
-;call sub1
 rol    bl,1
 INC bp
 mov    bH,cs:FAILW[bp]
@@ -758,8 +733,6 @@ out    Port1A,al
 
 mov    AL,BL
 out    Port1B,al
-
-;call sub1
 rol    bl,1
 INC bp
 mov    bH,cs:PASSW[bp]
@@ -779,14 +752,12 @@ Z2:        MOV CH,cs:CntDgts
 cmp ch,0
 je zz
 MOV bp,0
-;LEA SI,CS:IpIC2
 mov    bH,cs:IpIC2[bp]
 mov    bL,1
 Z1:     mov    AL,BL
 out    Port1B,al
 mov    al,bH
 out    Port1A,al
-;call sub1
 rol    bl,1
 INC bp
 mov    bH,cs:IpIC2[bp]
@@ -795,14 +766,6 @@ JNE Z1
 zz:
 ret
 DISDIG endp
-;MOV AL,FLAG
-;CMP AL,0
-;JE X0
-
-;CMP AL,1
-;JE Y0
-
-;JMP Y0
 
 D20MS:    mov cx,2220
 xn:        loop xn
@@ -814,7 +777,3 @@ mov        cx,10 ; delay generated will be approx 0.45 secs
 Z3:          loop        Z3
 pop       cx
 sub1 endp
-
-
-
-; [SOURCE]: C:\Users\ratna\Downloads\BITS ACADS\2.2\INSTR F241 MICROPROC & INTERFACING (MuP)\Project\19_04_02\code2.asm
