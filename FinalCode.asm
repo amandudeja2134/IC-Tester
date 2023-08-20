@@ -1,18 +1,19 @@
 ;initialisation
 #make_bin#
 
+;initialising segment and offset
 #LOAD_SEGMENT=FFFFh#
 #LOAD_OFFSET=0000h#
 
+;initialising all other segments and pointers
 #CS=0000h#
 #IP=0000h#
-
 #DS=0000h#
 #ES=0000h#
-
 #SS=0000h#
 #SP=FFFEh#
 
+;initialising registers
 #AX=0000h#
 #BX=0000h#
 #CX=0000h#
@@ -26,28 +27,29 @@
 jmp st1
 
 
-;8255 mapping
+;8255 1 port mapping
 Port1A equ 00h  
 Port1B equ 02h
 Port1C equ 04h
 Creg1 equ  06h
 
+;8255 2 port mapping
 Port2A equ 10h
 Port2B equ 12h
 Port2C equ 14h
 Creg2 equ  16h
 
 ;Keypad
-TableK    db    0eeh, 0edh, 0ebh, 0e7h,        ;0, 1, 2, 3
-db    0deh, 0ddh, 0dbh, 0d7h,        ;4, 5, 6, 7,
-db    0beh, 0bdh, 0bbh, 0b7h,        ;8, 9, Backspace, Enter,
-db    07eh                        ;Test
+Table    db    0eeh, 0edh, 0ebh, 0e7h,        ;0, 1, 2, 3
+db        0deh, 0ddh, 0dbh, 0d7h,              ;4, 5, 6, 7,
+db        0beh, 0bdh, 0bbh, 0b7h,              ;8, 9,Backspace, Enter,
+db        07eh                                 ;Test key
 
 ;Display
 TableD     db     0c0h, 0f9h, 0a4h, 0b0h        ;0, 1, 2, 3,
-db    099h, 092h, 082h, 0f8h        ;4, 5, 6, 7,
-db    080h, 090h, 08ch, 088h        ;8, 9, P, A,
-db    092h, 08eh, 0f9h, 0c7h        ;S, F, I, L
+db    099h, 092h, 082h, 0f8h                    ;4, 5, 6, 7,
+db    080h, 090h, 08ch, 088h                    ;8, 9, P, A,
+db    092h, 08eh, 0f9h, 0c7h                    ;S, F, I, L
 
 
 ;Stack initialisation
@@ -185,7 +187,7 @@ JZ X2
 X3:        OR AL,BL
 MOV CX,0FH
 MOV DI,00H
-X4:        CMP AL,CS:TableK[DI]
+X4:        CMP AL,CS:Table[DI]
 JZ  X5
 INC DI
 LOOP X4
@@ -201,24 +203,20 @@ mov si,dx
 MOV AX,DI
 ADD AX,'0'
 MOV cs:IpIC[si],AL
-;LEA SI,IpIC2
 MOV AL,CS:TableD[Di]
 MOV cs:IPIC2[si],AL
 INC cs:CntDgts
-jmp x0
-;mov ch,6
-;call DISDIG                    ;Jump to DISPLAY if there is a digit entered
+jmp x0                 
 j3:
 BCKSPC:    CMP DI,10                    ;Check for Backspace
-JNE ENTER1
+JNE ENTER
 CMP cs:CntDgts,0
 JE X0                        ;Checking if the digits are more than 0 before backspace
 DEC cs:CntDgts
     jmp x0
 
-ENTER1:    CMP DI,11                    ;Check for enter
+ENTER:    CMP DI,11                    ;Check for enter
 JNE X0
-;If it is enter, we take in only one key-press. ie, TEST
 Y0:        MOV AL,00H
 OUT Port1C,AL
 Y1:
@@ -303,7 +301,7 @@ Y3:        OR AL,BL
 MOV CX,0FH
 MOV DI,00H
 
-Y4:        CMP AL,CS:TableK[DI]
+Y4:        CMP AL,CS:Table[DI]
 JZ  Y5
 INC DI
 LOOP Y4
@@ -322,7 +320,6 @@ NEXT4:
         MOV CX,4
 		mov bp,0
 d1:     mov al,CS:IpIC[bp]
-        ;LEA DI,NandIC
         mov ah,CS:NandIC[bp]
         inc bp
         cmp ah,al            ;Checking for NAND
@@ -376,7 +373,6 @@ d8:     JMP FAIL                ;If none of the ICs in the database match, then 
 NEXT6:    mov bp,0
         mov cx,6
 d9:               mov al,CS:IpIC[bp]
-;LEA DI,NandIC
         mov ah,CS:XnorIC[bp]
         inc bp
         cmp ah,al            ;Checking for Xnor
